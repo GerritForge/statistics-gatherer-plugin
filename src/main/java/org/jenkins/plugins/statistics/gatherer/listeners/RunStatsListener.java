@@ -153,20 +153,19 @@ public class RunStatsListener extends RunListener<Run<?, ?>> {
         EnvVars environment = getEnvVars(run, listener);
         SCMInfo scmInfo = new SCMInfo();
         if (environment != null) {
-            if (environment.get("GIT_URL") != null) {
-                scmInfo.setUrl(environment.get("GIT_URL"));
-            } else if (environment.get("SVN_URL") != null) {
-                scmInfo.setUrl(environment.get("SVN_URL"));
+            String scmUrl = getEnvWithFallback(environment, "GIT_URL", "SVN_URL");
+            if (scmUrl != null) {
+                scmInfo.setUrl(scmUrl);
             }
-            if (environment.get("GIT_BRANCH") != null) {
-                scmInfo.setBranch(environment.get("GIT_BRANCH"));
-            } else if (environment.get("Branch") != null) {
-                scmInfo.setBranch(environment.get("Branch"));
+
+            String scmBranch = getEnvWithFallback(environment, "GIT_BRANCH", "Branch");
+            if (scmBranch != null) {
+                scmInfo.setBranch(scmBranch);
             }
-            if (environment.get("GIT_COMMIT") != null) {
-                scmInfo.setCommit(environment.get("GIT_COMMIT"));
-            } else if (environment.get("SVN_REVISION") != null) {
-                scmInfo.setCommit(environment.get("SVN_REVISION"));
+
+            String scmCommit = getEnvWithFallback(environment, "GIT_COMMIT", "SVN_REVISION");
+            if (scmCommit != null) {
+                scmInfo.setCommit(scmCommit);
             }
         }
         build.setScmInfo(scmInfo);
@@ -282,5 +281,16 @@ public class RunStatsListener extends RunListener<Run<?, ?>> {
 
     private String getScmCheckoutUrl() {
         return PropertyLoader.getScmCheckoutEndPoint();
+    }
+
+    private String getEnvWithFallback(EnvVars env, String... envVars) {
+        for (String envVar: envVars) {
+            String envValue = env.get(envVar);
+            if(envValue != null) {
+                return envValue;
+            }
+        }
+
+        return null;
     }
 }
