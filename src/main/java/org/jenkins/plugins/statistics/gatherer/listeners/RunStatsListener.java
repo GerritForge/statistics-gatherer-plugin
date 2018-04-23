@@ -158,7 +158,7 @@ public class RunStatsListener extends RunListener<Run<?, ?>> {
                 scmInfo.setUrl(scmUrl);
             }
 
-            String scmBranch = getEnvWithFallback(environment, "GIT_BRANCH", "Branch");
+            String scmBranch = getEnvWithFallback(environment, "GIT_BRANCH", "Branch", "BRANCH_NAME");
             if (scmBranch != null) {
                 scmInfo.setBranch(scmBranch);
             }
